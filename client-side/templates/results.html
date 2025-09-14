@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InCarScan | Report</title>
+  <style>
+    html, body { overflow-x: hidden; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #f7f4e6;
+      color: #000;
+    }
+
+    header {
+      width: 100%;
+      padding: 1rem 2rem;
+      background: #a8e063;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .logo-container { display: flex; align-items: center; }
+    .logoimage { width: 40px; height: 40px; margin-right: 10px; }
+    .logo { font-size: 1.5rem; font-weight: bold; color: #000; }
+
+    .user-container {
+      position: absolute;
+      top: 1rem;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+    }
+    .user-icon { width: 30px; height: 30px; margin-right: 10px; }
+    .username { font-size: 1rem; color: #000; }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+
+    .loading-gif {
+      max-width: 300px;
+      border-radius: 10px;
+      display: block;
+    }
+
+    .report-content {
+      display: none; /* hidden until loading finishes */
+    }
+
+    footer {
+      padding: 1rem;
+      background: #f7f4e6;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .footer-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background 0.3s ease;
+      display: inline-block;
+      font-size: 1rem;
+    }
+
+    /* Green button */
+    .footer-btn { background: #a8e063; color: #000; }
+    .footer-btn:hover { background: #8bc34a; }
+
+    /* Red button */
+    .report-btn { background: #ff6b6b; color: #fff; }
+    .report-btn:hover { background: #e53935; }
+
+    .bottom-info {
+      width: 100%;
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      padding: 0.5rem;
+      box-sizing: border-box;
+    }
+    .divider {
+      width: 100%;
+      height: 3px;
+      background-color: #a8e063;
+      margin-bottom: 0.5rem;
+    }
+    .call-center {
+      text-align: right;
+      font-size: 0.9rem;
+      color: #000;
+    }
+    .call-center .label { font-weight: bold; margin-bottom: 0.3rem; }
+    .call-center .line { font-size: 0.85rem; color: #333; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='car2/unnamed.jpg') }}" alt="Logo" class="logoimage" />
+      <div class="logo">InCarScan</div>
+    </div>
+
+    <div class="user-container">
+      <img src="{{ url_for('static', filename='car2/user.png') }}" alt="User Icon" class="user-icon" />
+      <span class="username">Иан Декстер</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Dummy loading GIF -->
+    <img id="loadingGif" src="{{ url_for('static', filename='car2/loading.gif') }}" alt="Loading..." class="loading-gif">
+
+    <!-- Report content -->
+    <div id="reportContent" class="report-content">
+      <h1>Success!</h1>
+    </div>
+  </main>
+
+  <footer>
+    <footer>
+  <a href="{{ url_for('home') }}" class="footer-btn">На главную</a>
+  <a href="{{ url_for('report_page') }}" class="footer-btn report-btn">PLACEHOLDER</a>
+</footer>
+
+  </footer>
+
+  <div class="bottom-info">
+    <div class="divider"></div>
+    <div class="call-center">
+      <div class="label">Call Center</div>
+      <div class="line">PLACEHOLDER</div>
+      <div class="line">PLACEHOLDER</div>
+    </div>
+  </div>
+
+  <script>
+  // set your friend's AI base URL (LAN IP + port)
+  const AI_BASE = "http://192.168.10.3:5000"; // <-- put his actual IP:port
+
+  setTimeout(() => {
+    // hide loader, show "Success!"
+    const gif = document.getElementById("loadingGif");
+    const content = document.getElementById("reportContent");
+    if (gif) gif.style.display = "none";
+    if (content) content.style.display = "block";
+
+    // get AI result saved by upload.html
+    const raw = sessionStorage.getItem("analysisResult");
+    if (!raw) {
+      // nothing stored — show a hint
+      const msg = document.createElement("p");
+      msg.textContent = "Нет данных анализа. Вернитесь на страницу загрузки и попробуйте снова.";
+      document.querySelector("main").appendChild(msg);
+      return;
+    }
+
+    const data = JSON.parse(raw);
+
+    // container for pretty output
+    const wrap = document.createElement("div");
+    wrap.style.marginTop = "1.5rem";
+    wrap.style.textAlign = "left";
+    wrap.style.maxWidth = "900px";
+
+    if (data && data.results) {
+      // Iterate photo1/photo2/photo3
+      Object.entries(data.results).forEach(([slot, item]) => {
+        const block = document.createElement("div");
+        block.style.marginBottom = "1rem";
+        block.style.background = "#fff";
+        block.style.padding = "1rem";
+        block.style.borderRadius = "8px";
+
+        const h = document.createElement("h3");
+        h.textContent = slot.toUpperCase();
+        block.appendChild(h);
+
+        // detections list
+        if (item.detections && item.detections.length) {
+          const ul = document.createElement("ul");
+          item.detections.forEach(det => {
+            const li = document.createElement("li");
+            // det can be {class, confidence}
+            if (det.class !== undefined) {
+              li.textContent = `${det.class} (${det.confidence ?? "?"})`;
+            } else {
+              // fallback if your friend returns a different shape
+              li.textContent = JSON.stringify(det);
+            }
+            ul.appendChild(li);
+          });
+          block.appendChild(ul);
+        } else {
+          const p = document.createElement("p");
+          p.textContent = "Нет детекций.";
+          block.appendChild(p);
+        }
+
+        // annotated image (if provided)
+        if (item.annotated_url) {
+          const img = document.createElement("img");
+          img.src = AI_BASE + item.annotated_url; // prefix friend host
+          img.alt = slot + " annotated";
+          img.style.maxWidth = "100%";
+          img.style.borderRadius = "8px";
+          img.style.marginTop = "0.5rem";
+          block.appendChild(img);
+        }
+
+        wrap.appendChild(block);
+      });
+    } else {
+      // Unknown shape — just dump JSON
+      const pre = document.createElement("pre");
+      pre.textContent = JSON.stringify(data, null, 2);
+      wrap.appendChild(pre);
+    }
+
+    document.querySelector("main").appendChild(wrap);
+
+    // optional: clear so refresh doesn't reuse old data
+    // sessionStorage.removeItem("analysisResult");
+  }, 5000);
+</script>
+
+
+
+
+</body>
+</html>

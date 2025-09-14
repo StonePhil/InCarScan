@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InCarScan | Upload</title>
+  <style>
+    html, body {
+  overflow-x: hidden;
+}
+
+   .bottom-info {
+  width: 100%;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0.5rem;          /* smaller padding */
+  box-sizing: border-box;   /* include padding in width */
+}
+
+
+.divider {
+  width: 100%;
+  height: 3px;
+  background-color: #a8e063; /* Lime green */
+  margin-bottom: 0.5rem;
+}
+
+.call-center {
+  text-align: right;
+  font-size: 0.9rem;
+  color: #000;
+}
+
+.call-center .label {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.call-center .line {
+  font-size: 0.85rem;
+  color: #333;
+}
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    background-color: #f7f4e6;
+    color: #000;
+  }
+
+  header {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: #a8e063;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .logoimage {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000;
+  }
+
+  .user-container {
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .user-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+  }
+
+  .username {
+    font-size: 1rem;
+    color: #000;
+  }
+
+  .upload-btn-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 2rem;
+    width: 80%;
+    max-width: 1000px;
+  }
+
+  .upload-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    border: 2px dashed #a8e063;
+    padding: 1rem;
+    background: #f7f4e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .upload-btn:hover {
+    background-color: #e1f5fe;
+  }
+
+  .upload-btn input[type="file"] {
+    display: none;
+  }
+
+  .upload-btn label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #a8e063;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .preview {
+    margin-top: 10px;
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 5px;
+    display: none;
+  }
+
+  .remove-btn {
+    margin-top: 10px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+    border: none;
+    background: #ff6b6b;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+    transition: background 0.3s ease;
+  }
+
+  .remove-btn:hover {
+    background: #e53935;
+  }
+
+  footer {
+    padding: 1rem;
+    background: #f7f4e6;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .submit-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    background: #a8e063;
+    color: #000;
+    transition: background 0.3s ease;
+  }
+
+  .submit-btn:disabled {
+    background: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
+
+  .submit-btn:not(:disabled):hover {
+    background: #8bc34a;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='car2/unnamed.jpg') }}" alt="Logo" class="logoimage">
+      <div class="logo" aria-label="Company Logo">InCarScan</div>
+    </div>
+    <div class="user-container">
+      <img src="{{ url_for('static', filename='car2/user.png') }}" alt="User Icon" class="user-icon">
+      <span class="username">Иан Декстер</span>
+    </div>
+  </header>
+
+  <div class="upload-btn-container">
+    <div class="upload-btn">
+      <input type="file" id="photo1" name="photo1" accept=".jpg,.jpeg,.png,.bmp,image/jpeg,image/png,image/bmp">
+      <label for="photo1">Вид спереди</label>
+      <img id="preview1" class="preview" src="" alt="">
+      <button type="button" id="remove1" class="remove-btn">Удалить</button>
+    </div>
+    <div class="upload-btn">
+      <input type="file" id="photo2" name="photo2" accept=".jpg,.jpeg,.png,.bmp,image/jpeg,image/png,image/bmp">
+      <label for="photo2">Вид сбоку</label>
+      <img id="preview2" class="preview" src="" alt="">
+      <button type="button" id="remove2" class="remove-btn">Удалить</button>
+    </div>
+    <div class="upload-btn">
+      <input type="file" id="photo3" name="photo3" accept=".jpg,.jpeg,.png,.bmp,image/jpeg,image/png,image/bmp">
+      <label for="photo3">Вид сзади</label>
+      <img id="preview3" class="preview" src="" alt="">
+      <button type="button" id="remove3" class="remove-btn">Удалить</button>
+    </div>
+  </div>
+
+  <footer>
+    <button id="submitBtn" class="submit-btn" disabled>Отправить на проверку</button>
+  </footer>
+
+  <script>
+    function previewImage(input, previewId, removeId) {
+  const file = input.files[0];
+  const preview = document.getElementById(previewId);
+  const removeBtn = document.getElementById(removeId);
+
+  if (file) {
+    // Allowed extensions
+    const allowedExtensions = ["jpg", "jpeg", "png", "bmp"];
+    const fileExt = file.name.split(".").pop().toLowerCase();
+
+    if (!allowedExtensions.includes(fileExt)) {
+      alert("Неверный формат файла! Разрешены только JPG, JPEG, PNG и BMP.");
+      input.value = ""; // reset input
+      preview.src = "";
+      preview.style.display = "none";
+      removeBtn.style.display = "none";
+      checkUploads();
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      preview.style.display = "block";
+      removeBtn.style.display = "inline-block";
+      checkUploads();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+
+    function removeImage(previewId, inputId, removeId) {
+      const preview = document.getElementById(previewId);
+      const input = document.getElementById(inputId);
+      const removeBtn = document.getElementById(removeId);
+      preview.src = "";
+      preview.style.display = "none";
+      input.value = "";
+      removeBtn.style.display = "none";
+      checkUploads();
+    }
+
+    function checkUploads() {
+      const photo1 = document.getElementById("photo1").files.length > 0;
+      const photo2 = document.getElementById("photo2").files.length > 0;
+      const photo3 = document.getElementById("photo3").files.length > 0;
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = !(photo1 && photo2 && photo3);
+    }
+
+    // Event listeners
+    document.getElementById("photo1").addEventListener("change", function() {
+      previewImage(this, "preview1", "remove1");
+    });
+    document.getElementById("photo2").addEventListener("change", function() {
+      previewImage(this, "preview2", "remove2");
+    });
+    document.getElementById("photo3").addEventListener("change", function() {
+      previewImage(this, "preview3", "remove3");
+    });
+
+    document.getElementById("remove1").addEventListener("click", function() {
+      removeImage("preview1", "photo1", "remove1");
+    });
+    document.getElementById("remove2").addEventListener("click", function() {
+      removeImage("preview2", "photo2", "remove2");
+    });
+    document.getElementById("remove3").addEventListener("click", function() {
+      removeImage("preview3", "photo3", "remove3");
+      
+    });
+    document.getElementById("submitBtn").addEventListener("click", function() {
+  // collect form data
+  const formData = new FormData();
+  formData.append("photo1", document.getElementById("photo1").files[0]);
+  formData.append("photo2", document.getElementById("photo2").files[0]);
+  formData.append("photo3", document.getElementById("photo3").files[0]);
+
+  // send to your Flask backend
+  fetch("/analyze", { method: "POST", body: formData })
+    .then(res => res.json())
+    .then(data => {
+      // save the analysis result in sessionStorage
+      sessionStorage.setItem("analysisResult", JSON.stringify(data));
+      // redirect to Flask route, not raw file
+      window.location.href = "/results";
+    })
+    .catch(err => {
+      console.error("Ошибка при отправке:", err);
+      alert("Не удалось отправить файлы на проверку.");
+    });
+});
+
+
+  </script>
+    <!-- Divider and bottom-right info -->
+  <div class="bottom-info">
+    <div class="divider"></div>
+    <div class="call-center">
+      <div class="label">Call Center</div>
+      <div class="line">PLACEHOLDER</div>
+      <div class="line">PLACEHOLDER</div>
+    </div>
+  </div>
+
+</body>
+</html>
